@@ -1,0 +1,33 @@
+- hosts: localhost
+  connection: local
+  become: true
+
+  tasks:
+    - name: Install required packages
+      apt:
+        name:
+          - docker.io
+          - curl
+        state: present
+        update_cache: yes
+
+    - name: Enable Docker
+      systemd:
+        name: docker
+        enabled: yes
+        state: started
+
+    - name: Install kubectl
+      get_url:
+        url: https://dl.k8s.io/release/v1.29.0/bin/linux/amd64/kubectl
+        dest: /usr/local/bin/kubectl
+        mode: '0755'
+
+    - name: Install Helm
+      shell: curl https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+
+    - name: Install kind
+      get_url:
+        url: https://kind.sigs.k8s.io/dl/v0.22.0/kind-linux-amd64
+        dest: /usr/local/bin/kind
+        mode: '0755'
